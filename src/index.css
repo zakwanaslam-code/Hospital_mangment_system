@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-dark-border/60;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply font-sans antialiased transition-colors duration-300;
+    @apply bg-light-bg text-light-text;
+  }
+  html.dark body {
+    @apply bg-dark-bg text-dark-text;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  /* === Glassmorphism card, works in both themes === */
+  .glass-card {
+    @apply bg-white/70 dark:bg-dark-card/60 backdrop-blur-md
+           border border-white/40 dark:border-white/10
+           shadow-glass-light dark:shadow-glass
+           rounded-2xl transition-all duration-300;
+  }
+
+  .glass-card:hover {
+    @apply shadow-card-hover -translate-y-0.5;
+  }
+
+  /* === Sidebar active menu indicator === */
+  .nav-item {
+    @apply flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium
+           text-light-muted dark:text-dark-muted
+           hover:bg-primary/10 hover:text-primary
+           transition-all duration-200 cursor-pointer relative;
+  }
+  .nav-item.active {
+    @apply bg-primary/15 text-primary;
+  }
+  .nav-item.active::before {
+    content: '';
+    @apply absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-r-full bg-primary;
+  }
+
+  /* === Skeleton loader shimmer === */
+  .skeleton {
+    @apply bg-gradient-to-r from-dark-border/40 via-dark-border/70 to-dark-border/40
+           bg-[length:1000px_100%] animate-shimmer rounded-lg;
+  }
+}
+
+/* === Custom scrollbar === */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
