@@ -1,41 +1,36 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const departmentSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: [true, 'Department name is required'],
       unique: true,
       trim: true,
     },
-
     code: {
       type: String,
-      required: true,
+      required: [true, 'Department code is required'],
       unique: true,
       uppercase: true,
       trim: true,
     },
-
     description: {
       type: String,
       trim: true,
-      default: "",
     },
-
     status: {
       type: Boolean,
-      default: true,
+      default: true, // active/inactive
     },
-
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
+      required: true,
     },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
-export default mongoose.model("Department", departmentSchema);
+const Department = mongoose.model('Department', departmentSchema);
+export default Department;

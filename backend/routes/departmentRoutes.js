@@ -1,26 +1,22 @@
-import express from "express";
+import express from 'express';
 import {
   createDepartment,
   getDepartments,
-    getDepartmentById,
-     updateDepartment,
+  getDepartmentById,
+  updateDepartment,
   deleteDepartment,
-} from "../controllers/departmentController.js";
-
-import { protect, authorize } from "../middleware/authMiddleware.js";
+} from '../controllers/departmentController.js';
+import { protect, authorize } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// Create Department (Admin Only)
-router.post("/", protect, authorize("admin"), createDepartment);
+// Sab logged-in users dekh sakein
+router.get('/', protect, getDepartments);
+router.get('/:id', protect, getDepartmentById);
 
-// Get All Departments
-router.get("/", protect, getDepartments);
-// get a single 
-router.get("/:id", protect, getDepartmentById);
-
-router.put("/:id", protect, authorize("admin"), updateDepartment);
-
-router.delete("/:id", protect, authorize("admin"), deleteDepartment);
+// Sirf admin create/update/delete kar sake
+router.post('/', protect, authorize('admin'), createDepartment);
+router.put('/:id', protect, authorize('admin'), updateDepartment);
+router.delete('/:id', protect, authorize('admin'), deleteDepartment);
 
 export default router;

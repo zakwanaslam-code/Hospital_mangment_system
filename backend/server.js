@@ -16,6 +16,14 @@ import { initSocket } from "./sockets/socketHandler.js";
 import healthRoutes from "./routes/healthRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import departmentRoutes from "./routes/departmentRoutes.js";
+import patientRoutes from './routes/patientRoutes.js';
+import appointmentRoutes from './routes/appointmentRoutes.js';
+import invoiceRoutes from './routes/invoiceRoutes.js';
+import pharmacyRoutes from './routes/pharmacyRoutes.js';
+import labRoutes from './routes/labRoutes.js';
+
+
+
 
 
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
@@ -82,6 +90,13 @@ app.use("/uploads", express.static("uploads"));
 app.use("/api/health", healthRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/departments", departmentRoutes);
+app.use('/api/patients', patientRoutes);
+app.use('/api/appointments', appointmentRoutes);
+app.use('/api/invoices', invoiceRoutes);
+app.use('/api/pharmacy', pharmacyRoutes);
+app.use('/api/lab', labRoutes);
+
+
 
 // ================= Error Handler =================
 app.use(notFound);
