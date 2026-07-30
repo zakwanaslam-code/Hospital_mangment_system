@@ -10,7 +10,7 @@ export const authService = {
     return data;
   },
   getMe: async () => {
-    const { data } = await api.get('/auth/me');
+    const { data } = await api.get('/auth/profile');
     return data;
   },
   forgotPassword: async (email) => {

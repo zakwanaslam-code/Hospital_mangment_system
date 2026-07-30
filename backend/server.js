@@ -21,7 +21,8 @@ import appointmentRoutes from './routes/appointmentRoutes.js';
 import invoiceRoutes from './routes/invoiceRoutes.js';
 import pharmacyRoutes from './routes/pharmacyRoutes.js';
 import labRoutes from './routes/labRoutes.js';
-
+import doctorRoutes from "./routes/doctorRoutes.js";
+ 
 
 
 
@@ -95,6 +96,8 @@ app.use('/api/appointments', appointmentRoutes);
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/pharmacy', pharmacyRoutes);
 app.use('/api/lab', labRoutes);
+app.use("/api/doctors", doctorRoutes);
+ 
 
 
 

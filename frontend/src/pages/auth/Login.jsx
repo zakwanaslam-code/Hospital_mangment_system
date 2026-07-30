@@ -1,12 +1,34 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, Lock, Eye, EyeOff, HeartPulse, Loader2 } from 'lucide-react';
+import {
+  Mail, Lock, Eye, EyeOff, HeartPulse, Loader2, Users, CalendarCheck,
+  Pill, FlaskConical, Receipt, ShieldCheck, Moon, Sun, LockKeyhole,
+} from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.jsx';
+import { useTheme } from '../../context/ThemeContext.jsx';
+import loginIllustration from '../../assets/login-illustration.jpg';
+
+const FEATURES = [
+  { icon: Users, label: 'Patient Management' },
+  { icon: CalendarCheck, label: 'Appointments' },
+  { icon: Pill, label: 'Pharmacy' },
+  { icon: FlaskConical, label: 'Laboratory' },
+  { icon: Receipt, label: 'Billing & Reports' },
+  { icon: ShieldCheck, label: 'Secure & Compliant' },
+];
+
+const STATS = [
+  { value: '500+', label: 'Active Patients', icon: Users },
+  { value: '50+', label: 'Specialist Doctors', icon: Users },
+  { value: '24/7', label: 'Emergency Support', icon: HeartPulse },
+  { value: '99.9%', label: 'System Uptime', icon: ShieldCheck },
+];
 
 function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -29,57 +51,100 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center overflow-hidden bg-dark-bg px-4">
+    <div className="min-h-screen relative flex items-center justify-center overflow-hidden bg-dark-bg px-4 py-8">
       {/* Animated gradient background blobs */}
       <motion.div
-        className="absolute w-96 h-96 rounded-full bg-primary/25 blur-3xl pointer-events-none"
+        className="absolute w-[500px] h-[500px] rounded-full bg-primary/20 blur-3xl pointer-events-none"
         animate={{ x: [0, 100, 0], y: [0, 60, 0] }}
-        transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
-        style={{ top: '-10%', left: '-10%' }}
+        transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }}
+        style={{ top: '-15%', left: '-10%' }}
       />
       <motion.div
-        className="absolute w-96 h-96 rounded-full bg-success/15 blur-3xl pointer-events-none"
+        className="absolute w-[500px] h-[500px] rounded-full bg-primary/10 blur-3xl pointer-events-none"
         animate={{ x: [0, -80, 0], y: [0, -50, 0] }}
-        transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }}
-        style={{ bottom: '-10%', right: '-10%' }}
+        transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }}
+        style={{ bottom: '-15%', right: '-10%' }}
       />
 
-      <div className="relative z-10 grid lg:grid-cols-2 gap-8 max-w-5xl w-full items-center">
-       {/* === Left: Hospital Info Card — hamesha dark glass, theme se independent === */}
-<motion.div
-  initial={{ opacity: 0, x: -30 }}
-  animate={{ opacity: 1, x: 0 }}
-  transition={{ duration: 0.6 }}
-  className="hidden lg:block bg-dark-card/50 backdrop-blur-xl border border-white/10
-             shadow-glass rounded-3xl p-10"
->
-  <div className="w-16 h-16 rounded-2xl bg-primary/15 flex items-center justify-center mb-6">
-    <HeartPulse className="text-primary" size={32} />
-  </div>
+      <div className="relative z-10 grid lg:grid-cols-2 gap-6 max-w-6xl w-full items-stretch">
+        {/* === Left: Illustration + Feature Panel === */}
+        <motion.div
+          initial={{ opacity: 0, x: -30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6 }}
+          className="hidden lg:flex flex-col justify-between bg-dark-card/50 backdrop-blur-xl
+                     border border-white/10 shadow-glass rounded-3xl p-10 relative overflow-hidden"
+        >
+          {/* Logo */}
+          <div>
+            <div className="w-14 h-14 rounded-2xl bg-primary/15 flex items-center justify-center mb-5">
+              <HeartPulse className="text-primary" size={26} />
+            </div>
+            <h2 className="text-3xl font-bold text-dark-text mb-2">
+              MediCore <span className="text-primary">EMR</span>
+            </h2>
+            <p className="text-dark-muted text-sm">Enterprise Hospital Management System</p>
+            <p className="text-dark-muted text-sm mt-1 leading-relaxed">
+              Patients, Doctors, Appointments, Billing, Pharmacy aur Laboratory
+              sab ek jagah, <span className="text-primary">real-time.</span>
+            </p>
+          </div>
 
-  <h2 className="text-3xl font-bold text-dark-text mb-3">
-    MediCore EMR
-  </h2>
+          {/* Illustration */}
+          <div className="relative flex-1 flex items-center justify-center my-6">
+            <img
+              src={loginIllustration}
+              alt="Doctors using MediCore EMR"
+              className="max-h-64 w-auto object-contain drop-shadow-2xl"
+            />
+          </div>
 
-  <p className="text-dark-muted mb-8 leading-relaxed">
-    Enterprise Hospital Management System — Patients, Doctors,
-    Appointments, Billing, Pharmacy aur Laboratory sab ek jagah,
-    real-time.
-  </p>
+          {/* Feature list */}
+          <div className="grid grid-cols-2 gap-3 mb-8">
+            {FEATURES.map(({ icon: Icon, label }) => (
+              <div key={label} className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
+                  <Icon className="text-primary" size={15} />
+                </div>
+                <span className="text-sm text-dark-text/90">{label}</span>
+              </div>
+            ))}
+          </div>
 
-  <div className="space-y-4">
-    ...
-  </div>
-</motion.div>
+          {/* Stats row */}
+          <div className="grid grid-cols-4 gap-2 pt-6 border-t border-dark-border/60">
+            {STATS.map(({ value, label, icon: Icon }) => (
+              <div key={label} className="text-center">
+                <Icon className="text-primary mx-auto mb-1" size={16} />
+                <p className="text-lg font-bold text-dark-text">{value}</p>
+                <p className="text-[10px] text-dark-muted leading-tight">{label}</p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
 
-        {/* === Right: Login Form — hamesha dark glass === */}
+        {/* === Right: Login Form === */}
         <motion.div
           initial={{ opacity: 0, x: 30 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
           className="bg-dark-card/60 backdrop-blur-xl border border-white/10
-                     shadow-glass rounded-3xl p-8 sm:p-10 w-full"
+                     shadow-glass rounded-3xl p-8 sm:p-10 w-full flex flex-col justify-center relative"
         >
+          {/* Theme toggle — top right */}
+          <button
+            onClick={toggleTheme}
+            className="absolute top-6 right-6 flex items-center gap-1 p-1 rounded-full
+                       bg-dark-bg/60 border border-dark-border"
+          >
+            <span className={`p-1.5 rounded-full ${theme === 'light' ? 'bg-primary/20' : ''}`}>
+              <Sun size={13} className={theme === 'light' ? 'text-primary' : 'text-dark-muted'} />
+            </span>
+            <span className={`p-1.5 rounded-full ${theme === 'dark' ? 'bg-primary/20' : ''}`}>
+              <Moon size={13} className={theme === 'dark' ? 'text-primary' : 'text-dark-muted'} />
+            </span>
+          </button>
+
           <div className="flex items-center gap-3 mb-2 lg:hidden">
             <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center">
               <HeartPulse className="text-primary" size={20} />
@@ -183,10 +248,37 @@ function Login() {
                   Logging in...
                 </>
               ) : (
-                'Login'
+                <>
+                  Login
+                  <span className="text-lg">→</span>
+                </>
               )}
             </motion.button>
           </form>
+
+          {/* OR divider */}
+          <div className="flex items-center gap-3 my-6">
+            <div className="flex-1 h-px bg-dark-border" />
+            <span className="text-xs text-dark-muted">OR</span>
+            <div className="flex-1 h-px bg-dark-border" />
+          </div>
+
+          {/* SSO button */}
+          <button
+            type="button"
+            className="w-full py-3 rounded-xl border border-dark-border text-dark-text
+                       font-medium text-sm flex items-center justify-center gap-2
+                       hover:bg-dark-bg/50 transition-colors"
+          >
+            <ShieldCheck size={17} className="text-dark-muted" />
+            Login with SSO
+          </button>
+
+          {/* Security footer */}
+          <p className="flex items-center justify-center gap-1.5 text-xs text-dark-muted mt-6">
+            <LockKeyhole size={12} />
+            Your data is 100% secure and encrypted
+          </p>
         </motion.div>
       </div>
     </div>

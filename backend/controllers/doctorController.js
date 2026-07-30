@@ -28,14 +28,14 @@ export const createDoctor = asyncHandler(async (req, res) => {
     throw new Error('A user with this email already exists');
   }
 
-  // Step 1: login account banao role: doctor ke sath
+  // Step 1: login account banao role: Doctor ke sath
   const user = await User.create({
     name,
     email,
     password,
     phone,
     avatar,
-    role: 'doctor',
+    role: 'Doctor',
     department,
   });
 
