@@ -4,9 +4,9 @@ export const COLORS = {
   success: '#10B981',
   warning: '#F59E0B',
   danger: '#EF4444',
-  bgDark: '#0F172A',
-  cardDark: '#1E293B',
-  border: '#334155',
+  bgDark: '#000000',
+  cardDark: '#0A0A0D',
+  border: '#1F1F26',
   textLight: '#F8FAFC',
 };
 

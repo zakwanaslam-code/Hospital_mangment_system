@@ -74,10 +74,10 @@ function Dashboard() {
     <div className="animate-fadeIn space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-dark-text">
-          Welcome back, {user?.name?.split(' ')[0]} 👋
+          Welcome back {user?.name ? `, ${user.name}` : ''}!
         </h1>
-        <p className="text-dark-muted text-sm mt-1">
-          Yahan aapke hospital ka aaj ka overview hai.
+        <p className="text-dark-muted text-sm mt-1 ">
+          Here's what's happening at your hospital today.
         </p>
       </div>
 

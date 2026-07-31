@@ -7,6 +7,12 @@ import PatientProfile from '../pages/patients/patientProfile.jsx';
 import Doctors from '../pages/doctors/Doctors.jsx';
 import DoctorProfile from '../pages/doctors/DoctorProfile.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
+import Appointments from '../pages/appointments/Appointments.jsx';
+import Departments from '../pages/departments/Departments.jsx';
+import Laboratory from '../pages/laboratory/Laboratory.jsx';
+
+
+
 
 function ProtectedRoute({ children }) {
   const { user, loading, token } = useAuth();
@@ -61,11 +67,15 @@ function AppRoutes() {
         {/* Doctors */}
         <Route path="/doctors" element={<Doctors />} />
         <Route path="/doctors/:id" element={<DoctorProfile />} />
+        <Route path="/appointments" element={<Appointments />} />
+        <Route path="/departments" element={<Departments />} />
+        <Route path="/laboratory" element={<Laboratory />} />
       </Route>
 
       {/* Default */}
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
+       
     </Routes>
   );
 }

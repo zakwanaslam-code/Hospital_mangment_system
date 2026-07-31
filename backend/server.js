@@ -1,4 +1,5 @@
 import express from "express";
+import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
@@ -48,7 +49,7 @@ app.use((req, res, next) => {
   req.io = io;
   next();
 });
-
+dotenv.config();
 // ================= Security =================
 app.use(helmet());
 

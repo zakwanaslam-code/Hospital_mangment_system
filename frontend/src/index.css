@@ -24,11 +24,11 @@
 @layer components {
   /* === Glassmorphism card, works in both themes === */
   .glass-card {
-    @apply bg-white/70 dark:bg-dark-card/60 backdrop-blur-md
-           border border-white/40 dark:border-white/10
-           shadow-glass-light dark:shadow-glass
-           rounded-2xl transition-all duration-300;
-  }
+  @apply bg-white/70 dark:bg-dark-card/90 backdrop-blur-md
+         border border-white/40 dark:border-white/[0.07]
+         shadow-glass-light dark:shadow-glass
+         rounded-2xl transition-all duration-300;
+}
 
   .glass-card:hover {
     @apply shadow-card-hover -translate-y-0.5;
@@ -70,4 +70,53 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #475569;
+}
+
+/* === react-big-calendar dark theme overrides === */
+.calendar-dark-theme .rbc-calendar {
+  color: #F8FAFC;
+}
+.calendar-dark-theme .rbc-header {
+  background: #1E293B;
+  color: #94A3B8;
+  border-color: #334155 !important;
+  padding: 8px 0;
+}
+.calendar-dark-theme .rbc-month-view,
+.calendar-dark-theme .rbc-time-view,
+.calendar-dark-theme .rbc-time-header,
+.calendar-dark-theme .rbc-time-content,
+.calendar-dark-theme .rbc-day-bg,
+.calendar-dark-theme .rbc-timeslot-group,
+.calendar-dark-theme .rbc-time-gutter {
+  border-color: #334155 !important;
+  background: transparent;
+}
+.calendar-dark-theme .rbc-off-range-bg {
+  background: rgba(51, 65, 85, 0.3);
+}
+.calendar-dark-theme .rbc-today {
+  background: rgba(37, 99, 235, 0.1);
+}
+.calendar-dark-theme .rbc-toolbar button {
+  color: #F8FAFC;
+  border-color: #334155;
+}
+.calendar-dark-theme .rbc-toolbar button:hover {
+  background: #334155;
+  color: #fff;
+}
+.calendar-dark-theme .rbc-toolbar button.rbc-active {
+  background: #2563EB;
+  border-color: #2563EB;
+}
+.calendar-dark-theme .rbc-toolbar-label {
+  color: #F8FAFC;
+  font-weight: 600;
+}
+.calendar-dark-theme .rbc-time-slot {
+  color: #94A3B8;
+}
+.calendar-dark-theme .rbc-current-time-indicator {
+  background-color: #EF4444;
 }

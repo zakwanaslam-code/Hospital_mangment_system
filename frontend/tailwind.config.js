@@ -34,13 +34,13 @@ export default {
           dark: '#DC2626',
         },
         // === Dark theme surfaces ===
-        dark: {
-          bg: '#0F172A',
-          card: '#1E293B',
-          border: '#334155',
-          text: '#F8FAFC',
-          muted: '#94A3B8',
-        },
+       dark: {
+  bg: '#000000',
+  card: '#0A0A0D',
+  border: '#1F1F26',
+  text: '#F8FAFC',
+  muted: '#8B8B96',
+},
         // === Light theme surfaces ===
         light: {
           bg: '#F1F5F9',

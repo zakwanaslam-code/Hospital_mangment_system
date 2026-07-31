@@ -10,8 +10,8 @@ function Navbar({ onMenuClick }) {
   const [profileOpen, setProfileOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-20 h-16 flex items-center justify-between gap-4 px-4 sm:px-6
-                        bg-dark-bg/70 backdrop-blur-xl border-b border-dark-border/60">
+   <header className="sticky top-0 z-[60] h-16 flex items-center justify-between gap-4 px-4 sm:px-6
+                    bg-black/80 backdrop-blur-xl border-b-2 border-[#2563EB]  shadow-[0_2px_15px_rgba(37,99,235,0.25)]">
       {/* Left: menu toggle + search */}
       <div className="flex items-center gap-3 flex-1">
         <button
