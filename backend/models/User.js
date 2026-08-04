@@ -24,17 +24,27 @@ const userSchema = new mongoose.Schema(
       select: false,
     },
 
+    phone: {
+  type: String,
+  trim: true,
+},
+
+department: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "Department",
+},
+
     role: {
       type: String,
       enum: [
         "admin",
         "Doctor",
-        "Receptionist",
+        "receptionist",
         "Nurse",
         "Lab",
-        "Pharmacist",
+        "pharmacist",
       ],
-      default: "Receptionist",
+      default: "receptionist",
     },
 
     isActive: {

@@ -23,6 +23,12 @@ import invoiceRoutes from './routes/invoiceRoutes.js';
 import pharmacyRoutes from './routes/pharmacyRoutes.js';
 import labRoutes from './routes/labRoutes.js';
 import doctorRoutes from "./routes/doctorRoutes.js";
+import inventoryRoutes from './routes/inventoryRoutes.js';
+import wardRoutes from './routes/wardRoutes.js';
+import staffRoutes from './routes/staffRoutes.js';
+import reportRoutes from './routes/reportRoutes.js';
+
+
  
 
 
@@ -98,7 +104,10 @@ app.use('/api/invoices', invoiceRoutes);
 app.use('/api/pharmacy', pharmacyRoutes);
 app.use('/api/lab', labRoutes);
 app.use("/api/doctors", doctorRoutes);
- 
+app.use('/api/inventory', inventoryRoutes);
+app.use('/api/wards', wardRoutes);
+ app.use('/api/staff', staffRoutes);
+ app.use('/api/reports', reportRoutes);
 
 
 

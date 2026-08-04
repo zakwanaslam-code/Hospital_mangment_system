@@ -2,80 +2,51 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from '../pages/auth/Login.jsx';
 import DashboardLayout from '../layouts/DashboardLayout.jsx';
 import Dashboard from '../pages/dashboard/Dashboard.jsx';
+import { useAuth } from '../context/AuthContext.jsx';
 import Patients from '../pages/patients/Patients.jsx';
-import PatientProfile from '../pages/patients/patientProfile.jsx';
+import PatientProfile from '../pages/patients/PatientProfile.jsx';
 import Doctors from '../pages/doctors/Doctors.jsx';
 import DoctorProfile from '../pages/doctors/DoctorProfile.jsx';
-import { useAuth } from '../context/AuthContext.jsx';
 import Appointments from '../pages/appointments/Appointments.jsx';
 import Departments from '../pages/departments/Departments.jsx';
 import Laboratory from '../pages/laboratory/Laboratory.jsx';
-
-
-
+import Billing from '../pages/billing/Billing.jsx';
+import Pharmacy from '../pages/pharmacy/Pharmacy.jsx';
+import Inventory from '../pages/inventory/Inventory.jsx';
+import WardManagement from '../pages/wards/WardManagement.jsx';
+import Staff from '../pages/staff/Staff.jsx';
+import Reports from '../pages/reports/Reports.jsx';
+import Settings from '../pages/settings/Settings.jsx';
 
 function ProtectedRoute({ children }) {
-  const { user, loading, token } = useAuth();
-
-  // DEBUG
-  console.log('========================');
-  console.log('PATH:', window.location.pathname);
-  console.log('LOADING:', loading);
-  console.log('TOKEN:', token);
-  console.log('USER:', user);
-  console.log('========================');
-
-  // Jab tak session restore ho rahi hai
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-dark-bg text-white">
-        <h1 className="text-2xl font-bold">Loading...</h1>
-      </div>
-    );
-  }
-
-  // Agar token hai lekin user nahi, to redirect mat karo
-  // (yehi tumhari problem ho sakti hai)
-  if (!user && !token) {
-    console.log('REDIRECTING TO LOGIN');
-    return <Navigate to="/login" replace />;
-  }
-
+  const { user, loading } = useAuth();
+  if (loading) return null;
+  if (!user) return <Navigate to="/login" replace />;
   return children;
 }
 
 function AppRoutes() {
   return (
     <Routes>
-      {/* Public */}
       <Route path="/login" element={<Login />} />
-
-      {/* Protected */}
-      <Route
-        element={
-          <ProtectedRoute>
-            <DashboardLayout />
-          </ProtectedRoute>
-        }
-      >
+      <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
         <Route path="/dashboard" element={<Dashboard />} />
-
-        {/* Patients */}
         <Route path="/patients" element={<Patients />} />
         <Route path="/patients/:id" element={<PatientProfile />} />
-
-        {/* Doctors */}
         <Route path="/doctors" element={<Doctors />} />
         <Route path="/doctors/:id" element={<DoctorProfile />} />
         <Route path="/appointments" element={<Appointments />} />
         <Route path="/departments" element={<Departments />} />
         <Route path="/laboratory" element={<Laboratory />} />
+        <Route path="/billing" element={<Billing />} />
+        <Route path="/pharmacy" element={<Pharmacy />} />
+        <Route path="/inventory" element={<Inventory />} />
+        <Route path="/wards" element={<WardManagement />} />
+        <Route path="/staff" element={<Staff />} />
+        <Route path="/reports" element={<Reports />} />
+        <Route path="/settings" element={<Settings />} />
       </Route>
-
-      {/* Default */}
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
-       
     </Routes>
   );
 }

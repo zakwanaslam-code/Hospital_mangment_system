@@ -2,15 +2,14 @@ import User from "../models/User.js";
 import generateToken from "../utils/generateToken.js";
 
 // ===============================
-// @desc    Register Admin/User
+// @desc    Register User
 // @route   POST /api/auth/register
 // @access  Public
 // ===============================
 export const register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
 
-    // Check required fields
     if (!name || !email || !password) {
       return res.status(400).json({
         success: false,
@@ -18,8 +17,9 @@ export const register = async (req, res) => {
       });
     }
 
-    // Check existing user
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({
+      email: email.toLowerCase().trim(),
+    });
 
     if (existingUser) {
       return res.status(400).json({
@@ -28,29 +28,30 @@ export const register = async (req, res) => {
       });
     }
 
-    // Create user
     const user = await User.create({
       name,
-      email,
+      email: email.toLowerCase().trim(),
       password,
+        role: role || "receptionist"
     });
 
     const token = generateToken(res, user._id);
-    
 
-res.status(200).json({
-  success: true,
-  message: "Login Successful",
-  token,
-  user: {
-    id: user._id,
-    name: user.name,
-    email: user.email,
-    role: user.role,
-  },
-});
+    return res.status(201).json({
+      success: true,
+      message: "Registration Successful",
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
   } catch (error) {
-    res.status(500).json({
+    console.error("REGISTER ERROR:", error);
+
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
@@ -66,7 +67,6 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Check required fields
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -74,8 +74,15 @@ export const login = async (req, res) => {
       });
     }
 
-    // Find user
-    const user = await User.findOne({ email }).select("+password");
+    console.log("====================================");
+    console.log("LOGIN REQUEST");
+    console.log("Email:", email);
+
+    const user = await User.findOne({
+      email: email.toLowerCase().trim(),
+    }).select("+password");
+
+    console.log("User Found:", user);
 
     if (!user) {
       return res.status(401).json({
@@ -84,8 +91,9 @@ export const login = async (req, res) => {
       });
     }
 
-    // Compare password
     const isMatch = await user.matchPassword(password);
+
+    console.log("Password Match:", isMatch);
 
     if (!isMatch) {
       return res.status(401).json({
@@ -94,23 +102,25 @@ export const login = async (req, res) => {
       });
     }
 
-    // Generate JWT Cookie
-   // Generate JWT Cookie
-const token = generateToken(res, user._id);
+    const token = generateToken(res, user._id);
 
-   res.status(200).json({
-  success: true,
-  message: "Login Successful",
-  token,
-  user: {
-    id: user._id,
-    name: user.name,
-    email: user.email,
-    role: user.role,
-  },
-});
+    console.log("Login Successful");
+
+    return res.status(200).json({
+      success: true,
+      message: "Login Successful",
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
   } catch (error) {
-    res.status(500).json({
+    console.error("LOGIN ERROR:", error);
+
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
@@ -118,7 +128,7 @@ const token = generateToken(res, user._id);
 };
 
 // ===============================
-// @desc    Get Logged In User Profile
+// @desc    Get Logged In User
 // @route   GET /api/auth/profile
 // @access  Private
 // ===============================
@@ -133,13 +143,14 @@ export const getProfile = async (req, res) => {
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       user,
     });
-
   } catch (error) {
-    res.status(500).json({
+    console.error("PROFILE ERROR:", error);
+
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
@@ -147,7 +158,7 @@ export const getProfile = async (req, res) => {
 };
 
 // ===============================
-// @desc    Update Logged In User Profile
+// @desc    Update Profile
 // @route   PUT /api/auth/profile
 // @access  Private
 // ===============================
@@ -162,13 +173,14 @@ export const updateProfile = async (req, res) => {
       });
     }
 
-    // Update fields
     user.name = req.body.name || user.name;
-    user.email = req.body.email || user.email;
+    user.email = req.body.email
+      ? req.body.email.toLowerCase().trim()
+      : user.email;
 
     const updatedUser = await user.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Profile updated successfully",
       user: {
@@ -178,9 +190,10 @@ export const updateProfile = async (req, res) => {
         role: updatedUser.role,
       },
     });
-
   } catch (error) {
-    res.status(500).json({
+    console.error("UPDATE PROFILE ERROR:", error);
+
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
@@ -201,13 +214,14 @@ export const logout = async (req, res) => {
       sameSite: "strict",
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Logout Successful",
     });
-
   } catch (error) {
-    res.status(500).json({
+    console.error("LOGOUT ERROR:", error);
+
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
@@ -252,13 +266,14 @@ export const changePassword = async (req, res) => {
 
     await user.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Password changed successfully",
     });
-
   } catch (error) {
-    res.status(500).json({
+    console.error("CHANGE PASSWORD ERROR:", error);
+
+    return res.status(500).json({
       success: false,
       message: error.message,
     });

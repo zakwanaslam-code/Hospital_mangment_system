@@ -1,11 +1,12 @@
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 
 function Modal({ isOpen, onClose, title, children, maxWidth = 'max-w-lg' }) {
-  return (
+  const modalContent = (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pt-20">
+        <div className="fixed inset-0 z-[100] flex items-start justify-center p-4 pt-24 overflow-y-auto">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -21,7 +22,7 @@ function Modal({ isOpen, onClose, title, children, maxWidth = 'max-w-lg' }) {
             transition={{ duration: 0.2 }}
             onClick={(e) => e.stopPropagation()}
             className={`relative bg-dark-card border border-dark-border rounded-2xl shadow-glass
-                        w-full ${maxWidth} max-h-[80vh] flex flex-col`}
+                        w-full ${maxWidth} max-h-[75vh] flex flex-col mb-8`}
           >
             <div className="flex items-center justify-between px-6 py-4 border-b border-dark-border shrink-0">
               <h3 className="text-lg font-semibold text-dark-text">{title}</h3>
@@ -39,6 +40,10 @@ function Modal({ isOpen, onClose, title, children, maxWidth = 'max-w-lg' }) {
       )}
     </AnimatePresence>
   );
+
+  // Portal — Modal ko document.body me directly render karta hai,
+  // taake koi bhi parent page ka CSS (transform, overflow, animate-fadeIn) ise trap na kar sake
+  return createPortal(modalContent, document.body);
 }
 
 export default Modal;

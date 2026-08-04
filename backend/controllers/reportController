@@ -1,0 +1,40 @@
+import asyncHandler from 'express-async-handler';
+import Patient from '../models/Patient.js';
+import Appointment from '../models/Appointment.js';
+import Invoice from '../models/Invoice.js';
+import Doctor from '../models/Doctor.js';
+import { sendSuccess } from '../utils/apiResponse.js';
+
+export const getOverviewReport = asyncHandler(async (req, res) => {
+  const { from, to } = req.query;
+  const dateFilter = {};
+  if (from) dateFilter.$gte = new Date(from);
+  if (to) dateFilter.$lte = new Date(to);
+  const match = Object.keys(dateFilter).length ? { createdAt: dateFilter } : {};
+
+  const [totalPatients, totalAppointments, totalDoctors, revenueAgg] = await Promise.all([
+    Patient.countDocuments(match),
+    Appointment.countDocuments(match),
+    Doctor.countDocuments(),
+    Invoice.aggregate([{ $match: match }, { $group: { _id: null, total: { $sum: '$totalAmount' }, paid: { $sum: '$amountPaid' } } }]),
+  ]);
+
+  const appointmentsByStatus = await Appointment.aggregate([
+    { $match: match },
+    { $group: { _id: '$status', count: { $sum: 1 } } },
+  ]);
+
+  const revenueByDay = await Invoice.aggregate([
+    { $match: match },
+    { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } }, revenue: { $sum: '$amountPaid' } } },
+    { $sort: { _id: 1 } },
+  ]);
+
+  sendSuccess(res, 'Report fetched', {
+    totalPatients, totalAppointments, totalDoctors,
+    totalRevenue: revenueAgg[0]?.total || 0,
+    totalPaid: revenueAgg[0]?.paid || 0,
+    appointmentsByStatus,
+    revenueByDay,
+  });
+});
