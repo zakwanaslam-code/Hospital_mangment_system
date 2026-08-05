@@ -102,6 +102,15 @@ export function AuthProvider({ children }) {
     sessionStorage.removeItem("medicore-token");
   };
 
+  const refreshUser = async () => {
+  try {
+    const res = await authService.getMe();
+    setUser(res.data);
+  } catch (err) {
+    // ignore
+  }
+};
+
   return (
     <AuthContext.Provider
       value={{
@@ -111,6 +120,7 @@ export function AuthProvider({ children }) {
         error,
         login,
         logout,
+        refreshUser,
       }}
     >
       {children}

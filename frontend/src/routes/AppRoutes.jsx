@@ -17,6 +17,7 @@ import WardManagement from '../pages/wards/WardManagement.jsx';
 import Staff from '../pages/staff/Staff.jsx';
 import Reports from '../pages/reports/Reports.jsx';
 import Settings from '../pages/settings/Settings.jsx';
+import Profile from '../pages/profile/Profile.jsx';
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
@@ -45,6 +46,7 @@ function AppRoutes() {
         <Route path="/staff" element={<Staff />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/profile" element={<Profile />} />
       </Route>
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>

@@ -34,12 +34,12 @@ export default {
           dark: '#DC2626',
         },
         // === Dark theme surfaces ===
-       dark: {
-  bg: '#000000',
-  card: '#0A0A0D',
-  border: '#1F1F26',
-  text: '#F8FAFC',
-  muted: '#8B8B96',
+      dark: {
+  bg: 'rgb(var(--color-bg) / <alpha-value>)',
+  card: 'rgb(var(--color-card) / <alpha-value>)',
+  border: 'rgb(var(--color-border) / <alpha-value>)',
+  text: 'rgb(var(--color-text) / <alpha-value>)',
+  muted: 'rgb(var(--color-muted) / <alpha-value>)',
 },
         // === Light theme surfaces ===
         light: {

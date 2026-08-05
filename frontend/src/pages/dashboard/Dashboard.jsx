@@ -4,6 +4,8 @@ import {
   Users, CalendarCheck, Stethoscope, DollarSign, Plus, ChevronDown,
   Calendar, BedDouble, FlaskConical, Pill, UserCog, Building2, AlertTriangle, Bed,
 } from 'lucide-react';
+
+import hospitalImage from "../../assets/hospital.jpg";
 import { useAuth } from '../../context/AuthContext.jsx';
 import { dashboardService } from '../../services/dashboardService.js';
 import { departmentService } from '../../services/departmentService.js';
@@ -95,6 +97,9 @@ function Dashboard() {
             <Calendar size={15} className="text-dark-muted" /> {today}
           </div>
           <div className="relative">
+
+
+            
             <button
               onClick={() => setQuickOpen(!quickOpen)}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary hover:bg-primary-700 text-white text-sm font-semibold shadow-glow transition-colors"
@@ -117,6 +122,56 @@ function Dashboard() {
           </div>
         </div>
       </div>
+<div
+  className="
+    relative mb-6 h-[260px] overflow-hidden rounded-3xl
+    border border-slate-200 dark:border-neutral-800
+    shadow-xl
+  "
+>
+  {/* Background Image */}
+  <img
+    src={hospitalImage}
+    alt="Hospital"
+    className="absolute inset-0 h-full w-full object-cover"
+  />
+
+  {/* Light Mode Overlay */}
+  <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/70 to-transparent dark:hidden"></div>
+
+  {/* Dark Mode Overlay */}
+  <div className="absolute inset-0 hidden dark:block bg-gradient-to-r from-black/90 via-black/70 to-transparent"></div>
+
+  {/* Blur only behind text */}
+  <div className="absolute inset-y-0 left-0 w-full lg:w-[48%] backdrop-blur-sm"></div>
+
+  {/* Content */}
+  <div className="relative z-10 flex h-full items-center px-8 lg:px-10">
+
+    <div className="max-w-md">
+
+     
+
+      <h2 className="mt-5 text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white">
+        Smart Healthcare
+        <br />
+        Starts Here.
+      </h2>
+
+      <div className="mt-6 flex gap-3">
+        <button className="rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700 transition">
+          Explore Dashboard
+        </button>
+
+        <button className="rounded-xl border border-slate-300 bg-white/50 px-6 py-3 font-semibold text-slate-800 backdrop-blur hover:bg-white/70 dark:border-neutral-700 dark:bg-black/30 dark:text-white dark:hover:bg-black/50">
+          Learn More
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+</div>
 
       {/* Top Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

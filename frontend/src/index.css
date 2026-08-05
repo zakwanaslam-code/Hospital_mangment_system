@@ -2,6 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+:root.dark {
+  --color-bg: 0 0 0;
+  --color-card: 10 10 13;
+  --color-border: 31 31 38;
+  --color-text: 248 250 252;
+  --color-muted: 139 139 150;
+}
+
+:root.light {
+  --color-bg: 248 250 252;
+  --color-card: 255 255 255;
+  --color-border: 226 232 240;
+  --color-text: 15 23 42;
+  --color-muted: 100 116 139;
+}
+
 @layer base {
   * {
     @apply border-dark-border/60;

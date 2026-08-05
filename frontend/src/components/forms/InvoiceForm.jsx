@@ -63,46 +63,65 @@ function InvoiceForm({ onSubmit, onCancel, loading }) {
         </select>
       </div>
 
+      {/* Items */}
       <div>
         <label className={labelClass}>Items *</label>
-        <div className="space-y-2">
+        <p className="text-xs text-dark-muted mb-3">
+          Add each billable item — e.g. Consultation Fee, Lab Test, Medicine
+        </p>
+
+        <div className="space-y-3">
           {form.items.map((item, idx) => (
-            <div key={idx} className="flex gap-2 items-center">
-              <input
-                required
-                placeholder="Description"
-                value={item.description}
-                onChange={(e) => updateItem(idx, 'description', e.target.value)}
-                className={`${inputClass} flex-1`}
-              />
-              <input
-                type="number"
-                min="1"
-                value={item.quantity}
-                onChange={(e) => updateItem(idx, 'quantity', e.target.value)}
-                className={`${inputClass} w-20`}
-                placeholder="Qty"
-              />
-              <input
-                type="number"
-                min="0"
-                value={item.unitPrice}
-                onChange={(e) => updateItem(idx, 'unitPrice', e.target.value)}
-                className={`${inputClass} w-28`}
-                placeholder="Price"
-              />
-              {form.items.length > 1 && (
-                <button type="button" onClick={() => removeItem(idx)} className="text-rose-400 p-2">
-                  <Trash2 size={16} />
-                </button>
-              )}
+            <div key={idx} className="rounded-xl border border-white/10 p-3 space-y-2">
+              <div className="flex items-center gap-2">
+                <input
+                  required
+                  placeholder="Item name (e.g. Consultation Fee)"
+                  value={item.description}
+                  onChange={(e) => updateItem(idx, 'description', e.target.value)}
+                  className={`${inputClass} flex-1`}
+                />
+                {form.items.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeItem(idx)}
+                    className="shrink-0 p-2 rounded-lg text-rose-400 hover:bg-rose-500/10"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-[11px] text-dark-muted block mb-1">Quantity</label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={item.quantity}
+                    onChange={(e) => updateItem(idx, 'quantity', e.target.value)}
+                    className={inputClass}
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] text-dark-muted block mb-1">Price (Rs.)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={item.unitPrice}
+                    onChange={(e) => updateItem(idx, 'unitPrice', e.target.value)}
+                    className={inputClass}
+                  />
+                </div>
+              </div>
             </div>
           ))}
         </div>
+
         <button
           type="button"
           onClick={addItem}
-          className="flex items-center gap-1.5 text-primary text-xs font-medium mt-2 hover:underline"
+          className="flex items-center gap-1.5 text-primary text-xs font-medium mt-3 hover:underline"
         >
           <Plus size={14} /> Add Item
         </button>

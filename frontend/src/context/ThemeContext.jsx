@@ -1,17 +1,21 @@
-import { createContext, useContext, useEffect } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 const ThemeContext = createContext();
 
-// App hamesha dark mode me rahegi — enterprise EMR ka intended design
 export function ThemeProvider({ children }) {
+  const [theme, setTheme] = useState(() => localStorage.getItem('medicore-theme') || 'dark');
+
   useEffect(() => {
     const root = window.document.documentElement;
-    root.classList.remove('light');
-    root.classList.add('dark');
-  }, []);
+    root.classList.remove('light', 'dark');
+    root.classList.add(theme);
+    localStorage.setItem('medicore-theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
 
   return (
-    <ThemeContext.Provider value={{ theme: 'dark' }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );

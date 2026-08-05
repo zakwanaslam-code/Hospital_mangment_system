@@ -157,76 +157,7 @@ export const getProfile = async (req, res) => {
   }
 };
 
-// ===============================
-// @desc    Update Profile
-// @route   PUT /api/auth/profile
-// @access  Private
-// ===============================
-export const updateProfile = async (req, res) => {
-  try {
-    const user = await User.findById(req.user._id);
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-
-    user.name = req.body.name || user.name;
-    user.email = req.body.email
-      ? req.body.email.toLowerCase().trim()
-      : user.email;
-
-    const updatedUser = await user.save();
-
-    return res.status(200).json({
-      success: true,
-      message: "Profile updated successfully",
-      user: {
-        id: updatedUser._id,
-        name: updatedUser.name,
-        email: updatedUser.email,
-        role: updatedUser.role,
-      },
-    });
-  } catch (error) {
-    console.error("UPDATE PROFILE ERROR:", error);
-
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
-
-// ===============================
-// @desc    Logout User
-// @route   POST /api/auth/logout
-// @access  Private
-// ===============================
-export const logout = async (req, res) => {
-  try {
-    res.cookie("token", "", {
-      httpOnly: true,
-      expires: new Date(0),
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-    });
-
-    return res.status(200).json({
-      success: true,
-      message: "Logout Successful",
-    });
-  } catch (error) {
-    console.error("LOGOUT ERROR:", error);
-
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
+ 
 
 // ===============================
 // @desc    Change Password
@@ -272,6 +203,50 @@ export const changePassword = async (req, res) => {
     });
   } catch (error) {
     console.error("CHANGE PASSWORD ERROR:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+// ===============================
+// @desc    Update own profile (name, phone, avatar)
+// @route   PUT /api/auth/update-profile
+// @access  Private
+// ===============================
+export const updateProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const { name, phone, avatar } = req.body;
+    if (name) user.name = name;
+    if (phone) user.phone = phone;
+    if (avatar) user.avatar = avatar;
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        avatar: user.avatar,
+      },
+    });
+  } catch (error) {
+    console.error("UPDATE PROFILE ERROR:", error);
 
     return res.status(500).json({
       success: false,

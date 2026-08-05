@@ -10,11 +10,19 @@ export const authService = {
     return data;
   },
   getMe: async () => {
-    const { data } = await api.get('/auth/profile');
+    const { data } = await api.get('/auth/me');
     return data;
   },
   forgotPassword: async (email) => {
     const { data } = await api.post('/auth/forgot-password', { email });
+    return data;
+  },
+  updateProfile: async (payload) => {
+    const { data } = await api.put('/auth/update-profile', payload);
+    return data;
+  },
+  updatePassword: async (payload) => {
+    const { data } = await api.put('/auth/update-password', payload);
     return data;
   },
 };

@@ -1,18 +1,19 @@
 import { useState } from 'react';
-import { Menu, Search, Bell, MessageSquare, Moon, Sun, ChevronDown, LogOut, User } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, Search, Bell, MessageSquare, Moon, Sun, ChevronDown, LogOut, User } from 'lucide-react';import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../../context/ThemeContext.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
+import { useNavigate } from 'react-router-dom';
 
 function Navbar({ onMenuClick }) {
   const { theme, toggleTheme } = useTheme();
   const { user, logout } = useAuth();
   const [profileOpen, setProfileOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
-   <header className=" sticky top-0 z-[9999] h-16 flex items-center justify-between gap-4 px-4 sm:px-6
-bg-black/90 backdrop-blur-xl border-b-2 border-[#2563EB]
-shadow-[0_2px_15px_rgba(37,99,235,0.25)]">
+  <header className="sticky top-0 z-[9999] h-16 flex items-center justify-between gap-4 px-4 sm:px-6
+                    bg-dark-bg/90 backdrop-blur-xl border-b-2 border-[#2563EB]
+                    shadow-[0_2px_15px_rgba(37,99,235,0.15)]">
       {/* Left: menu toggle + search */}
       <div className="flex items-center gap-3 flex-1">
         <button
@@ -44,6 +45,8 @@ shadow-[0_2px_15px_rgba(37,99,235,0.25)]">
         <button className="p-2.5 rounded-xl text-dark-muted hover:bg-dark-card hover:text-dark-text">
           <MessageSquare size={19} />
         </button>
+
+        
 
         <button
           onClick={toggleTheme}
@@ -81,9 +84,12 @@ shadow-[0_2px_15px_rgba(37,99,235,0.25)]">
                   <p className="text-sm font-medium text-dark-text">{user?.name}</p>
                   <p className="text-xs text-dark-muted capitalize">{user?.role}</p>
                 </div>
-                <button className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-dark-muted hover:bg-dark-bg hover:text-dark-text">
-                  <User size={15} /> My Profile
-                </button>
+               <button
+  onClick={() => { navigate('/profile'); setProfileOpen(false); }}
+  className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-dark-muted hover:bg-dark-bg hover:text-dark-text"
+>
+  <User size={15} /> My Profile
+</button>
                 <button
                   onClick={logout}
                   className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-danger hover:bg-danger/10"
