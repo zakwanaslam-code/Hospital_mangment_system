@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Plus, UploadCloud, Eye, Printer, Clock, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { Plus, UploadCloud, Eye, Printer, Clock, CheckCircle2, AlertTriangle, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { labService } from '../../services/labService.js';
@@ -23,6 +23,7 @@ function Laboratory() {
   const [requestModalOpen, setRequestModalOpen] = useState(false);
   const [uploadTarget, setUploadTarget] = useState(null);
   const [viewTarget, setViewTarget] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
   const fetchTests = useCallback(async () => {
@@ -65,6 +66,20 @@ function Laboratory() {
       fetchTests();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to upload report');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    setSubmitting(true);
+    try {
+      await labService.deleteLabTest(deleteTarget._id);
+      toast.success('Test deleted successfully');
+      setDeleteTarget(null);
+      fetchTests();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to delete test');
     } finally {
       setSubmitting(false);
     }
@@ -136,11 +151,20 @@ function Laboratory() {
                     <p className="font-semibold text-dark-text text-sm">{test.testName}</p>
                     <p className="text-xs text-dark-muted mt-0.5">{test.testId}</p>
                   </div>
-                  {test.priority === 'urgent' && (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-danger/15 text-danger">
-                      URGENT
-                    </span>
-                  )}
+                  <div className="flex items-center gap-1.5">
+                    {test.priority === 'urgent' && (
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-danger/15 text-danger">
+                        URGENT
+                      </span>
+                    )}
+                    <button
+                      onClick={() => setDeleteTarget(test)}
+                      className="p-1.5 rounded-lg text-dark-muted hover:bg-danger/10 hover:text-danger"
+                      title="Delete Test"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
                 </div>
 
                 <p className="text-sm text-dark-text mb-1">{test.patient?.name}</p>
@@ -221,6 +245,28 @@ function Laboratory() {
             )}
           </div>
         )}
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal isOpen={!!deleteTarget} onClose={() => setDeleteTarget(null)} title="Delete Lab Test">
+        <p className="text-dark-muted text-sm mb-6">
+          Are you sure you want to delete <span className="text-dark-text font-medium">{deleteTarget?.testName}</span> ({deleteTarget?.testId})? This action cannot be undone.
+        </p>
+        <div className="flex justify-end gap-3">
+          <button
+            onClick={() => setDeleteTarget(null)}
+            className="px-4 py-2.5 rounded-xl text-sm text-dark-muted hover:bg-dark-bg transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleDelete}
+            disabled={submitting}
+            className="px-5 py-2.5 rounded-xl bg-danger hover:bg-danger-dark text-white text-sm font-semibold transition-colors disabled:opacity-70"
+          >
+            Delete
+          </button>
+        </div>
       </Modal>
     </div>
   );

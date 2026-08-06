@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Phone } from 'lucide-react';
+import { Phone, Trash2 } from 'lucide-react';
 
 const STATUS_COLORS = {
   active: 'bg-success/15 text-success',
@@ -8,7 +8,7 @@ const STATUS_COLORS = {
   discharged: 'bg-primary/15 text-primary',
 };
 
-function PatientTable({ patients }) {
+function PatientTable({ patients, onDelete }) {
   const navigate = useNavigate();
 
   return (
@@ -23,6 +23,7 @@ function PatientTable({ patients }) {
               <th className="px-5 py-3 font-medium">Blood Group</th>
               <th className="px-5 py-3 font-medium">Department</th>
               <th className="px-5 py-3 font-medium">Status</th>
+              <th className="px-5 py-3 font-medium"></th>
             </tr>
           </thead>
           <tbody>
@@ -53,6 +54,18 @@ function PatientTable({ patients }) {
                   <span className={`px-2.5 py-1 rounded-full text-[11px] font-medium capitalize ${STATUS_COLORS[p.status]}`}>
                     {p.status}
                   </span>
+                </td>
+                <td className="px-5 py-3">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDelete(p);
+                    }}
+                    className="p-1.5 rounded-lg text-dark-muted hover:bg-danger/10 hover:text-danger"
+                    title="Remove Patient"
+                  >
+                    <Trash2 size={14} />
+                  </button>
                 </td>
               </tr>
             ))}

@@ -12,6 +12,8 @@ const wardSchema = new mongoose.Schema({
   totalBeds: { type: Number, required: true, min: 1 },
   beds: [bedSchema],
   floor: { type: String, trim: true },
+  assignedDoctor: { type: mongoose.Schema.Types.ObjectId, ref: 'Doctor', default: null },
+  inCharge: { type: String, trim: true }, // Nurse/Ward-in-charge ka naam (simple text field)
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
 }, { timestamps: true });
 
@@ -24,6 +26,9 @@ wardSchema.pre('save', function (next) {
   }
   next();
 });
+
+
+
 
 wardSchema.virtual('occupiedCount').get(function () {
   return this.beds.filter((b) => b.status === 'occupied').length;

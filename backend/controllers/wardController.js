@@ -8,25 +8,83 @@ export const createWard = asyncHandler(async (req, res) => {
 });
 
 export const getWards = asyncHandler(async (req, res) => {
-  const wards = await Ward.find().sort({ createdAt: -1 });
-  sendSuccess(res, 'Wards fetched', wards, { count: wards.length });
+  const wards = await Ward.find()
+    .populate({
+      path: "assignedDoctor",
+      populate: {
+        path: "user",
+        select: "name",
+      },
+    })
+    .populate("beds.patient", "name patientId")
+    .sort({ createdAt: -1 });
+
+  sendSuccess(res, "Wards fetched", wards, {
+    count: wards.length,
+  });
 });
 
 export const getWardById = asyncHandler(async (req, res) => {
-  const ward = await Ward.findById(req.params.id).populate('beds.patient', 'name patientId');
-  if (!ward) { res.status(404); throw new Error('Ward not found'); }
-  sendSuccess(res, 'Ward fetched', ward);
+  const ward = await Ward.findById(req.params.id)
+    .populate({
+      path: "assignedDoctor",
+      populate: {
+        path: "user",
+        select: "name",
+      },
+    })
+    .populate("beds.patient", "name patientId");
+
+  if (!ward) {
+    res.status(404);
+    throw new Error("Ward not found");
+  }
+
+  sendSuccess(res, "Ward fetched", ward);
 });
+ 
 
 export const updateWard = asyncHandler(async (req, res) => {
   const ward = await Ward.findById(req.params.id);
-  if (!ward) { res.status(404); throw new Error('Ward not found'); }
-  const { name, wardType, floor } = req.body;
+
+  if (!ward) {
+    res.status(404);
+    throw new Error("Ward not found");
+  }
+
+  const {
+    name,
+    wardType,
+    floor,
+    assignedDoctor,
+    inCharge,
+  } = req.body;
+
   if (name) ward.name = name;
   if (wardType) ward.wardType = wardType;
   if (floor) ward.floor = floor;
+
+  if (assignedDoctor !== undefined) {
+    ward.assignedDoctor = assignedDoctor || null;
+  }
+
+  if (inCharge !== undefined) {
+    ward.inCharge = inCharge;
+  }
+
   await ward.save();
-  sendSuccess(res, 'Ward updated successfully', ward);
+
+  const updatedWard = await Ward.findById(ward._id)
+    .populate({
+      path: "assignedDoctor",
+      populate: {
+        path: "user",
+        select: "name",
+      },
+    })
+    .populate("beds.patient", "name patientId");
+
+  sendSuccess(res, "Ward updated successfully", updatedWard);
 });
 
 // @desc Assign / discharge a bed

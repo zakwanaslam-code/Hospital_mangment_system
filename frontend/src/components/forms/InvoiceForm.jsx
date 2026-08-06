@@ -7,6 +7,20 @@ const inputClass =
   'placeholder:text-dark-muted/60 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm';
 const labelClass = 'text-xs font-medium text-dark-muted mb-1.5 block';
 
+// Common billing items — ek click me item list me add ho jate hain
+const QUICK_ITEMS = [
+  { label: 'Room Charges (per day)', price: 2000 },
+  { label: 'Doctor Consultation Fee', price: 1500 },
+  { label: 'Nursing Care Charges', price: 300 },
+  { label: 'Medicine', price: 0 },
+  { label: 'Lab Test - CBC', price: 800 },
+  { label: 'Lab Test - X-Ray', price: 1200 },
+  { label: 'Lab Test - Ultrasound', price: 1500 },
+  { label: 'Surgery / OT Charges', price: 0 },
+  { label: 'Ambulance Service', price: 0 },
+  { label: 'Registration Fee', price: 200 },
+];
+
 function InvoiceForm({ onSubmit, onCancel, loading }) {
   const [patients, setPatients] = useState([]);
   const [form, setForm] = useState({
@@ -30,6 +44,20 @@ function InvoiceForm({ onSubmit, onCancel, loading }) {
 
   const addItem = () => {
     setForm({ ...form, items: [...form.items, { description: '', quantity: 1, unitPrice: 0 }] });
+  };
+
+  // Quick-add — agar sirf ek khali item ho to usi ko fill kar do, warna naya row add karo
+  const addQuickItem = (quickItem) => {
+    const items = [...form.items];
+    const lastEmpty = items.findIndex((i) => !i.description);
+    const newItem = { description: quickItem.label, quantity: 1, unitPrice: quickItem.price };
+
+    if (lastEmpty !== -1) {
+      items[lastEmpty] = newItem;
+    } else {
+      items.push(newItem);
+    }
+    setForm({ ...form, items });
   };
 
   const removeItem = (index) => {
@@ -63,36 +91,63 @@ function InvoiceForm({ onSubmit, onCancel, loading }) {
         </select>
       </div>
 
-      {/* Items */}
+      {/* Quick Add buttons */}
+      <div>
+        <label className={labelClass}>Quick Add — common items</label>
+        <div className="flex flex-wrap gap-1.5">
+          {QUICK_ITEMS.map((qi) => (
+            <button
+              key={qi.label}
+              type="button"
+              onClick={() => addQuickItem(qi)}
+              className="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-primary/10 text-primary
+                         border border-primary/20 hover:bg-primary/20 transition-colors"
+            >
+              + {qi.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+{/* Items */}
       <div>
         <label className={labelClass}>Items *</label>
         <p className="text-xs text-dark-muted mb-3">
-          Add each billable item — e.g. Consultation Fee, Lab Test, Medicine
+          Click a quick-add button above, or type manually below
         </p>
 
-        <div className="space-y-3">
+        <div className="space-y-4">
           {form.items.map((item, idx) => (
-            <div key={idx} className="rounded-xl border border-white/10 p-3 space-y-2">
-              <div className="flex items-center gap-2">
-                <input
-                  required
-                  placeholder="Item name (e.g. Consultation Fee)"
-                  value={item.description}
-                  onChange={(e) => updateItem(idx, 'description', e.target.value)}
-                  className={`${inputClass} flex-1`}
-                />
+            <div
+              key={idx}
+              className="rounded-xl border-2 border-dark-border bg-dark-bg/40 p-4 space-y-3
+                         shadow-[0_1px_3px_rgba(15,23,42,0.06)]"
+            >
+              {/* Item number badge — taake har card clearly ek unit lage */}
+              <div className="flex items-center justify-between">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-primary bg-primary/10 px-2 py-1 rounded-md">
+                  Item {idx + 1}
+                </span>
                 {form.items.length > 1 && (
                   <button
                     type="button"
                     onClick={() => removeItem(idx)}
-                    className="shrink-0 p-2 rounded-lg text-rose-400 hover:bg-rose-500/10"
+                    className="shrink-0 p-1.5 rounded-lg text-rose-400 hover:bg-rose-500/10"
                   >
-                    <Trash2 size={16} />
+                    <Trash2 size={15} />
                   </button>
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
+              <input
+                required
+                placeholder="Item name (e.g. Consultation Fee)"
+                value={item.description}
+                onChange={(e) => updateItem(idx, 'description', e.target.value)}
+                className={`${inputClass} bg-white dark:bg-dark-bg/80 font-medium`}
+              />
+
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-[11px] text-dark-muted block mb-1">Quantity</label>
                   <input
@@ -100,7 +155,7 @@ function InvoiceForm({ onSubmit, onCancel, loading }) {
                     min="1"
                     value={item.quantity}
                     onChange={(e) => updateItem(idx, 'quantity', e.target.value)}
-                    className={inputClass}
+                    className={`${inputClass} bg-white dark:bg-dark-bg/80`}
                   />
                 </div>
                 <div>
@@ -110,9 +165,17 @@ function InvoiceForm({ onSubmit, onCancel, loading }) {
                     min="0"
                     value={item.unitPrice}
                     onChange={(e) => updateItem(idx, 'unitPrice', e.target.value)}
-                    className={inputClass}
+                    className={`${inputClass} bg-white dark:bg-dark-bg/80`}
                   />
                 </div>
+              </div>
+
+              {/* Har item ka apna subtotal — taake pata chale ye line kitne ki bani */}
+              <div className="flex justify-between items-center pt-2 border-t border-dark-border/60 text-xs">
+                <span className="text-dark-muted">Line total</span>
+                <span className="font-semibold text-dark-text">
+                  Rs. {(item.quantity * item.unitPrice).toFixed(2)}
+                </span>
               </div>
             </div>
           ))}
@@ -123,7 +186,7 @@ function InvoiceForm({ onSubmit, onCancel, loading }) {
           onClick={addItem}
           className="flex items-center gap-1.5 text-primary text-xs font-medium mt-3 hover:underline"
         >
-          <Plus size={14} /> Add Item
+          <Plus size={14} /> Add Blank Item
         </button>
       </div>
 

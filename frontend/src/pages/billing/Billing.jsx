@@ -113,13 +113,19 @@ function Billing() {
                     </td>
                     <td className="px-5 py-3 text-dark-muted">{new Date(inv.createdAt).toLocaleDateString()}</td>
                     <td className="px-5 py-3">
-                      <button
-                        onClick={() => invoiceService.downloadPDF(inv._id)}
-                        className="p-2 rounded-lg text-dark-muted hover:bg-dark-bg hover:text-primary"
-                        title="Download PDF"
-                      >
-                        <Download size={15} />
-                      </button>
+                    <button
+  onClick={async () => {
+    try {
+      await invoiceService.downloadPDF(inv._id, inv.invoiceNumber);
+    } catch (err) {
+      toast.error('Failed to download invoice');
+    }
+  }}
+  className="p-2 rounded-lg text-dark-muted hover:bg-dark-bg hover:text-primary"
+  title="Download PDF"
+>
+  <Download size={15} />
+</button>
                     </td>
                   </tr>
                 ))}

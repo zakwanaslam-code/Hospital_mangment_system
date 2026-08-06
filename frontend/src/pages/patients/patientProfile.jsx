@@ -187,13 +187,19 @@ function PatientProfile() {
                       </td>
                       <td className="py-2.5 text-dark-muted">{new Date(inv.createdAt).toLocaleDateString()}</td>
                       <td className="py-2.5">
-                        <button
-                          onClick={() => invoiceService.downloadPDF(inv._id)}
-                          className="p-1.5 rounded-lg text-dark-muted hover:bg-dark-bg hover:text-primary"
-                          title="Download PDF"
-                        >
-                          <Download size={14} />
-                        </button>
+                       <button
+  onClick={async () => {
+    try {
+      await invoiceService.downloadPDF(inv._id, inv.invoiceNumber);
+    } catch (err) {
+      console.error(err);
+    }
+  }}
+  className="p-1.5 rounded-lg text-dark-muted hover:bg-dark-bg hover:text-primary"
+  title="Download PDF"
+>
+  <Download size={14} />
+</button>
                       </td>
                     </tr>
                   ))}

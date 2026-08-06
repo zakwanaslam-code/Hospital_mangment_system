@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Search, Plus, LayoutGrid, List, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { Search, Plus, LayoutGrid, List, ChevronLeft, ChevronRight } from 'lucide-react';
 import { patientService } from '../../services/patientService.js';
 import PatientCard from '../../components/cards/PatientCard.jsx';
 import PatientTable from '../../components/tables/PatientTable.jsx';
@@ -17,6 +17,7 @@ function Patients() {
   const [meta, setMeta] = useState({ pages: 1, total: 0 });
   const [modalOpen, setModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const fetchPatients = useCallback(async () => {
     setLoading(true);
@@ -32,7 +33,7 @@ function Patients() {
   }, [search, status, page]);
 
   useEffect(() => {
-    const timer = setTimeout(fetchPatients, 300); // debounce search
+    const timer = setTimeout(fetchPatients, 300);
     return () => clearTimeout(timer);
   }, [fetchPatients]);
 
@@ -45,6 +46,20 @@ function Patients() {
       fetchPatients();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to add patient');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    setSubmitting(true);
+    try {
+      await patientService.deletePatient(deleteTarget._id);
+      toast.success('Patient removed successfully');
+      setDeleteTarget(null);
+      fetchPatients();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to remove patient');
     } finally {
       setSubmitting(false);
     }
@@ -121,10 +136,12 @@ function Patients() {
         </div>
       ) : view === 'grid' ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {patients.map((p, i) => <PatientCard key={p._id} patient={p} delay={i * 0.03} />)}
+          {patients.map((p, i) => (
+            <PatientCard key={p._id} patient={p} delay={i * 0.03} onDelete={setDeleteTarget} />
+          ))}
         </div>
       ) : (
-        <PatientTable patients={patients} />
+        <PatientTable patients={patients} onDelete={setDeleteTarget} />
       )}
 
       {/* Pagination */}
@@ -153,6 +170,29 @@ function Patients() {
       {/* Add Patient Modal */}
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Add New Patient">
         <PatientForm onSubmit={handleAddPatient} onCancel={() => setModalOpen(false)} loading={submitting} />
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal isOpen={!!deleteTarget} onClose={() => setDeleteTarget(null)} title="Remove Patient">
+        <p className="text-dark-muted text-sm mb-6">
+          Are you sure you want to remove <span className="text-dark-text font-medium">{deleteTarget?.name}</span> ({deleteTarget?.patientId})?
+          This will permanently delete their record. This action cannot be undone.
+        </p>
+        <div className="flex justify-end gap-3">
+          <button
+            onClick={() => setDeleteTarget(null)}
+            className="px-4 py-2.5 rounded-xl text-sm text-dark-muted hover:bg-dark-bg transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleDelete}
+            disabled={submitting}
+            className="px-5 py-2.5 rounded-xl bg-danger hover:bg-danger-dark text-white text-sm font-semibold transition-colors disabled:opacity-70"
+          >
+            Remove Patient
+          </button>
+        </div>
       </Modal>
     </div>
   );

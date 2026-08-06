@@ -37,19 +37,19 @@ const ICONS = {
 };
 
 const ITEM_COLORS = {
-  Dashboard: "text-blue-400",
-  Patients: "text-emerald-400",
-  Doctors: "text-cyan-400",
-  Appointments: "text-amber-400",
-  Departments: "text-violet-400",
-  Laboratory: "text-fuchsia-400",
-  Pharmacy: "text-teal-400",
-  Billing: "text-rose-400",
-  Inventory: "text-orange-400",
-  "Ward Management": "text-indigo-400",
-  Staff: "text-sky-400",
-  Reports: "text-lime-400",
-  Settings: "text-slate-400",
+  Dashboard: "text-blue-500",
+  Patients: "text-emerald-500",
+  Doctors: "text-cyan-500",
+  Appointments: "text-amber-500",
+  Departments: "text-violet-500",
+  Laboratory: "text-fuchsia-500",
+  Pharmacy: "text-teal-500",
+  Billing: "text-rose-500",
+  Inventory: "text-orange-500",
+  "Ward Management": "text-indigo-500",
+  Staff: "text-sky-500",
+  Reports: "text-lime-600",
+  Settings: "text-slate-500",
 };
 
 function Sidebar({ open, onClose }) {
@@ -70,8 +70,8 @@ function Sidebar({ open, onClose }) {
         transition={{ duration: 0.25 }}
         className="
           fixed top-0 left-0 h-screen w-64 z-50
-          bg-dark-bg border-r border-dark-border
-          flex flex-col shadow-2xl
+          bg-dark-card border-r border-dark-border
+          flex flex-col shadow-[2px_0_12px_rgba(15,23,42,0.04)]
           lg:static
         "
       >
@@ -114,8 +114,8 @@ function Sidebar({ open, onClose }) {
                 className={({ isActive }) =>
                   `group flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 relative ${
                     isActive
-                      ? "bg-gradient-to-r from-primary/25 to-primary/5 text-dark-text ring-1 ring-primary/30 shadow-[0_0_20px_-6px_rgba(37,99,235,0.5)]"
-                      : "text-dark-muted hover:bg-primary/5 hover:text-dark-text"
+                      ? "bg-gradient-to-r from-primary/15 to-primary/5 text-dark-text ring-1 ring-primary/20 shadow-[0_0_20px_-6px_rgba(37,99,235,0.35)]"
+                      : "text-dark-text/70 hover:bg-primary/5 hover:text-dark-text"
                   }`
                 }
               >
@@ -126,7 +126,7 @@ function Sidebar({ open, onClose }) {
                     )}
                     <Icon
                       size={18}
-                      className={isActive ? "text-primary" : `${accent} opacity-80 group-hover:opacity-100`}
+                      className={isActive ? "text-primary" : accent}
                     />
                     <span>{item.label}</span>
                   </>
@@ -136,8 +136,6 @@ function Sidebar({ open, onClose }) {
           })}
         </nav>
 
- 
-
         {/* Footer */}
         <div className="p-4 border-t border-dark-border">
           <p className="text-xs text-center text-dark-muted/70">
@@ -146,17 +144,7 @@ function Sidebar({ open, onClose }) {
         </div>
       </motion.aside>
     </>
-
- 
-
-
   );
-
-   
 }
-
-
-
-
 
 export default Sidebar;

@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
+import LandingPage from '../pages/landing/LandingPage.jsx';
 import Login from '../pages/auth/Login.jsx';
 import DashboardLayout from '../layouts/DashboardLayout.jsx';
 import Dashboard from '../pages/dashboard/Dashboard.jsx';
@@ -29,6 +30,7 @@ function ProtectedRoute({ children }) {
 function AppRoutes() {
   return (
     <Routes>
+      <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<Login />} />
       <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
         <Route path="/dashboard" element={<Dashboard />} />
@@ -48,8 +50,7 @@ function AppRoutes() {
         <Route path="/settings" element={<Settings />} />
         <Route path="/profile" element={<Profile />} />
       </Route>
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
-    </Routes>
+<Route path="*" element={<Navigate to="/" replace />} />    </Routes>
   );
 }
 
