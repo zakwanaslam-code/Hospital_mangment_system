@@ -1,16 +1,35 @@
-// Real-time events yahan register honge — Step 12 me poora wire karenge
-// (naya appointment, low stock alert, lab report ready, etc.)
+// backend/sockets/socketHandler.js
 
 export const initSocket = (io) => {
-  io.on('connection', (socket) => {
-    console.log(`🔌 Client connected: ${socket.id}`);
 
-    socket.on('join', (userId) => {
-      socket.join(userId); // per-user room — targeted notifications ke liye
+  io.on("connection", (socket) => {
+
+    console.log("🟢 Socket connected:", socket.id);
+
+
+    // User specific room join
+    socket.on("joinRoom", (userId) => {
+
+      socket.join(userId);
+
+      console.log(
+        `User joined room: ${userId}`
+      );
+
     });
 
-    socket.on('disconnect', () => {
-      console.log(`❌ Client disconnected: ${socket.id}`);
+
+    // Disconnect
+    socket.on("disconnect", () => {
+
+      console.log(
+        "🔴 Socket disconnected:",
+        socket.id
+      );
+
     });
+
   });
+
+
 };

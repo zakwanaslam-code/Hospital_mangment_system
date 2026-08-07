@@ -65,10 +65,22 @@ const labTestSchema = new mongoose.Schema(
 
 labTestSchema.pre('save', async function (next) {
   if (this.testId) return next();
-  const count = await mongoose.model('LabTest').countDocuments();
-  this.testId = `LAB-${String(count + 1).padStart(6, '0')}`;
+
+  // Sabse recent/highest testId dhoondh kar uske aage +1 karte hain
+  // (count use karna risky hai — delete hone par duplicate ban sakta hai)
+  const lastTest = await mongoose.model('LabTest')
+    .findOne({ testId: { $exists: true } })
+    .sort({ createdAt: -1 })
+    .select('testId');
+
+  let nextNumber = 1;
+  if (lastTest?.testId) {
+    const lastNumber = parseInt(lastTest.testId.split('-')[1], 10);
+    if (!isNaN(lastNumber)) nextNumber = lastNumber + 1;
+  }
+
+  this.testId = `LAB-${String(nextNumber).padStart(6, '0')}`;
   next();
 });
-
 const LabTest = mongoose.model('LabTest', labTestSchema);
 export default LabTest;

@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useAuth } from '../../context/AuthContext.jsx';
 import {
   LayoutDashboard,
   Users,
@@ -53,6 +54,12 @@ const ITEM_COLORS = {
 };
 
 function Sidebar({ open, onClose }) {
+  const { user } = useAuth();
+
+  const visibleMenu = SIDEBAR_MENU.filter(
+    (item) => !item.roles || item.roles.includes(user?.role)
+  );
+
   return (
     <>
       {open && (
@@ -98,7 +105,8 @@ function Sidebar({ open, onClose }) {
 
         {/* Menu */}
         <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
-          {SIDEBAR_MENU.map((item) => {
+
+           {visibleMenu.map((item) => {
             const Icon = ICONS[item.icon];
             const accent = ITEM_COLORS[item.label] || "text-primary";
 

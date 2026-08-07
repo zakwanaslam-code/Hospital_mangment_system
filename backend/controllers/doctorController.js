@@ -3,6 +3,8 @@ import Doctor from '../models/Doctor.js';
 import User from '../models/User.js';
 import Patient from '../models/Patient.js';
 import { sendSuccess, sendCreated } from '../utils/apiResponse.js';
+import createNotification from "../utils/createNotification.js";
+
 
 // @desc    Create doctor — User account + Doctor profile dono ek sath banata hai
 // @route   POST /api/doctors
@@ -23,23 +25,24 @@ export const createDoctor = asyncHandler(async (req, res) => {
   } = req.body;
 
   const userExists = await User.findOne({ email });
+
   if (userExists) {
     res.status(400);
-    throw new Error('A user with this email already exists');
+    throw new Error("A user with this email already exists");
   }
 
-  // Step 1: login account banao role: Doctor ke sath
+  // Step 1: Create User
   const user = await User.create({
     name,
     email,
     password,
     phone,
     avatar,
-    role: 'Doctor',
+    role: "Doctor",
     department,
   });
 
-  // Step 2: professional profile banao
+  // Step 2: Create Doctor Profile
   const doctor = await Doctor.create({
     user: user._id,
     department,
@@ -51,13 +54,22 @@ export const createDoctor = asyncHandler(async (req, res) => {
   });
 
   const populated = await doctor.populate([
-    { path: 'user', select: 'name email phone avatar' },
-    { path: 'department', select: 'name code' },
+    { path: "user", select: "name email phone avatar" },
+    { path: "department", select: "name code" },
   ]);
 
-  sendCreated(res, 'Doctor added successfully', populated);
-});
+  // Notification
+  await createNotification({
+    receiver: user._id,
+    sender: req.user._id,
+    title: "Welcome Doctor",
+    message: "Your doctor account has been created successfully.",
+    type: "doctor",
+    link: "/doctor/profile",
+  });
 
+  sendCreated(res, "Doctor added successfully", populated);
+});
 // @desc    Get all doctors — search + filter + pagination
 // @route   GET /api/doctors?search=&department=&status=&page=1&limit=10
 // @access  Private
@@ -191,4 +203,61 @@ export const getDoctorStats = asyncHandler(async (req, res) => {
   const active = await Doctor.countDocuments({ status: 'active' });
 
   sendSuccess(res, 'Doctor stats fetched', { total, active });
+});
+
+
+// @desc    Get my own doctor profile (for logged-in doctor)
+// @route   GET /api/doctors/me/profile
+// @access  Private/Doctor
+export const getMyDoctorProfile = asyncHandler(async (req, res) => {
+  const doctor = await Doctor.findOne({ user: req.user._id })
+    .populate('user', 'name email phone avatar')
+    .populate('department', 'name code')
+    .populate('reviews.patient', 'name patientId');
+
+  if (!doctor) {
+    res.status(404);
+    throw new Error('Doctor profile not found for this account');
+  }
+
+  // Appointment model se aaj ke patients count karte hain (jaisa admin wale view me hota hai)
+  const Appointment = (await import('../models/Appointment.js')).default;
+  const start = new Date(); start.setHours(0, 0, 0, 0);
+  const end = new Date(); end.setHours(23, 59, 59, 999);
+  const patientsToday = await Appointment.countDocuments({
+    doctor: doctor._id,
+    date: { $gte: start, $lte: end },
+    status: { $nin: ['cancelled', 'no_show'] },
+  });
+
+  sendSuccess(res, 'Profile fetched', { ...doctor.toObject(), patientsToday });
+});
+
+// @desc    Update my own doctor profile (qualifications, schedule, fee, etc.)
+// @route   PUT /api/doctors/me/profile
+// @access  Private/Doctor
+export const updateMyDoctorProfile = asyncHandler(async (req, res) => {
+  const doctor = await Doctor.findOne({ user: req.user._id });
+
+  if (!doctor) {
+    res.status(404);
+    throw new Error('Doctor profile not found for this account');
+  }
+
+  const { specialization, qualification, experience, consultationFee, schedule } = req.body;
+
+  if (specialization) doctor.specialization = specialization;
+  if (qualification) doctor.qualification = qualification;
+  if (experience !== undefined) doctor.experience = experience;
+  if (consultationFee !== undefined) doctor.consultationFee = consultationFee;
+  if (schedule) doctor.schedule = schedule;
+
+  await doctor.save();
+
+  const populated = await doctor.populate([
+    { path: 'user', select: 'name email phone avatar' },
+    { path: 'department', select: 'name code' },
+  ]);
+
+  sendSuccess(res, 'Profile updated successfully', populated);
 });

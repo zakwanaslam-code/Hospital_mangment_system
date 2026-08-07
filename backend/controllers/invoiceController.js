@@ -2,6 +2,7 @@ import asyncHandler from 'express-async-handler';
 import Invoice from '../models/Invoice.js';
 import { generateInvoicePDF } from '../utils/generateInvoicePDF.js';
 import { sendSuccess, sendCreated } from '../utils/apiResponse.js';
+import createNotification from "../utils/createNotification.js";
 
 // @desc    Create invoice
 // @route   POST /api/invoices
@@ -20,6 +21,16 @@ export const createInvoice = asyncHandler(async (req, res) => {
     paymentMethod,
     createdBy: req.user._id,
   });
+
+  await createNotification({
+  receiver: req.user._id,
+  sender: req.user._id,
+  title: "Invoice Created",
+  message: `Invoice #${invoice.invoiceNumber} created successfully.`,
+  type: "billing",
+  link: `/invoices/${invoice._id}`,
+   io: req.io
+});
 
   const populated = await invoice.populate('patient', 'name patientId phone');
 
@@ -98,6 +109,17 @@ export const updateInvoice = asyncHandler(async (req, res) => {
 
   await invoice.save(); // pre-save hook totals + paymentStatus recalculate karega
 
+await createNotification({
+  receiver: req.user._id,
+  sender: req.user._id,
+  title: "Invoice Updated",
+  message: `Invoice #${invoice.invoiceNumber} updated successfully.`,
+  type: "billing",
+  link: `/invoices/${invoice._id}`,
+   io: req.io
+});
+
+  
   req.io.emit('invoice:updated', invoice);
 
   sendSuccess(res, 'Invoice updated successfully', invoice);
@@ -114,6 +136,18 @@ export const deleteInvoice = asyncHandler(async (req, res) => {
   }
 
   await invoice.deleteOne();
+ 
+
+await createNotification({
+  receiver: req.user._id,
+  sender: req.user._id,
+  title: "Invoice Deleted",
+  message: `Invoice #${invoice.invoiceNumber} has been deleted.`,
+  type: "billing",
+  link: "/invoices",
+   io: req.io
+});
+
   sendSuccess(res, 'Invoice deleted successfully');
 });
 

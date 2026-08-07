@@ -1,6 +1,15 @@
-import asyncHandler from 'express-async-handler';
-import Appointment from '../models/Appointment.js';
-import { sendSuccess, sendCreated } from '../utils/apiResponse.js';
+import asyncHandler from "express-async-handler";
+import Appointment from "../models/Appointment.js";
+import Doctor from "../models/Doctor.js";
+import Patient from "../models/Patient.js";
+import { sendSuccess, sendCreated } from "../utils/apiResponse.js";
+import createNotification from "../utils/createNotification.js";
+
+
+
+
+
+
 
 // Din ka start/end nikalne ka helper — queue number aur conflict check ke liye
 const getDayRange = (date) => {
@@ -56,6 +65,24 @@ export const createAppointment = asyncHandler(async (req, res) => {
     { path: 'doctor', populate: { path: 'user', select: 'name avatar' } },
     { path: 'department', select: 'name code' },
   ]);
+
+// Create notification for doctor
+const doctorData = await Doctor.findById(doctor).populate("user");
+
+const patientData = await Patient.findById(patient);
+
+if (doctorData?.user) {
+  await createNotification({
+    receiver: doctorData.user._id,
+    sender: req.user._id,
+    title: "New Appointment",
+    message: `${patientData.name} booked an appointment.`,
+    type: "appointment",
+    link: `/appointments/${appointment._id}`,
+  });
+}
+
+
 
   // Real-time: sabko live update bhej do (Recent Activity feed + notifications ke liye)
   req.io.emit('appointment:new', populated);
@@ -157,6 +184,20 @@ export const updateAppointment = asyncHandler(async (req, res) => {
     { path: 'department', select: 'name code' },
   ]);
 
+  const doctorData = await Doctor.findById(appointment.doctor).populate("user");
+const patientData = await Patient.findById(appointment.patient);
+
+if (doctorData?.user) {
+  await createNotification({
+    receiver: doctorData.user._id,
+    sender: req.user._id,
+    title: "Appointment Updated",
+    message: `${patientData.name}'s appointment has been updated.`,
+    type: "appointment",
+    link: `/appointments/${appointment._id}`,
+  });
+}
+
   // Real-time update — calendar drag&drop ya status change turant sab clients par reflect ho
   req.io.emit('appointment:updated', populated);
 
@@ -175,6 +216,20 @@ export const deleteAppointment = asyncHandler(async (req, res) => {
   }
 
   await appointment.deleteOne();
+
+  const doctorData = await Doctor.findById(appointment.doctor).populate("user");
+const patientData = await Patient.findById(appointment.patient);
+
+if (doctorData?.user) {
+  await createNotification({
+    receiver: doctorData.user._id,
+    sender: req.user._id,
+    title: "Appointment Cancelled",
+    message: `${patientData.name}'s appointment has been cancelled.`,
+    type: "appointment",
+    link: "/appointments",
+  });
+}
 
   req.io.emit('appointment:deleted', { id: req.params.id });
 

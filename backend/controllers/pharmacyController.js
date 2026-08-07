@@ -2,6 +2,8 @@ import asyncHandler from 'express-async-handler';
 import Medicine from '../models/Medicine.js';
 import Sale from '../models/Sale.js';
 import { sendSuccess, sendCreated } from '../utils/apiResponse.js';
+import createNotification from "../utils/createNotification.js";
+
 
 // ===== MEDICINES =====
 
@@ -9,6 +11,15 @@ import { sendSuccess, sendCreated } from '../utils/apiResponse.js';
 // @route   POST /api/pharmacy/medicines
 // @access  Private/Pharmacist/Admin
 export const addMedicine = asyncHandler(async (req, res) => {
+await createNotification({
+  receiver: req.user._id,
+  sender: req.user._id,
+  title: "Medicine Added",
+  message: `${medicine.name} has been added to pharmacy.`,
+  type: "pharmacy",
+  link: `/pharmacy/${medicine._id}`,
+});
+
   const medicine = await Medicine.create({ ...req.body, createdBy: req.user._id });
   sendCreated(res, 'Medicine added successfully', medicine);
 });
@@ -75,6 +86,15 @@ export const updateMedicine = asyncHandler(async (req, res) => {
   Object.assign(medicine, req.body);
   await medicine.save();
 
+  await createNotification({
+  receiver: req.user._id,
+  sender: req.user._id,
+  title: "Medicine Updated",
+  message: `${medicine.name} information has been updated.`,
+  type: "pharmacy",
+  link: `/pharmacy/${medicine._id}`,
+});
+
   // Stock kam ho jaye to real-time alert bhejo (Dashboard notifications ke liye)
   if (medicine.stockQuantity <= medicine.reorderLevel) {
     req.io.emit('medicine:lowStock', {
@@ -97,6 +117,16 @@ export const deleteMedicine = asyncHandler(async (req, res) => {
     throw new Error('Medicine not found');
   }
   await medicine.deleteOne();
+  
+await createNotification({
+  receiver: req.user._id,
+  sender: req.user._id,
+  title: "Medicine Deleted",
+  message: `${medicine.name} has been removed from pharmacy.`,
+  type: "pharmacy",
+  link: "/pharmacy",
+});
+
   sendSuccess(res, 'Medicine deleted successfully');
 });
 

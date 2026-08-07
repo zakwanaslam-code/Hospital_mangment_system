@@ -5,16 +5,8 @@ export const authService = {
     const { data } = await api.post('/auth/login', { email, password });
     return data;
   },
-  logout: async () => {
-    const { data } = await api.post('/auth/logout');
-    return data;
-  },
   getMe: async () => {
-    const { data } = await api.get('/auth/me');
-    return data;
-  },
-  forgotPassword: async (email) => {
-    const { data } = await api.post('/auth/forgot-password', { email });
+    const { data } = await api.get('/auth/profile'); // backend route /auth/profile hai, /auth/me nahi
     return data;
   },
   updateProfile: async (payload) => {
@@ -22,7 +14,7 @@ export const authService = {
     return data;
   },
   updatePassword: async (payload) => {
-    const { data } = await api.put('/auth/update-password', payload);
+    const { data } = await api.put('/auth/change-password', payload);
     return data;
   },
 };

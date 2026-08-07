@@ -7,6 +7,8 @@ import {
   deleteDoctor,
   addDoctorReview,
   getDoctorStats,
+  getMyDoctorProfile,
+  updateMyDoctorProfile,
 } from '../controllers/doctorController.js';
 import { protect, authorize } from '../middleware/authMiddleware.js';
 
@@ -16,6 +18,9 @@ router.get('/stats/count', protect, getDoctorStats);
 
 router.get('/', protect, getDoctors);
 router.get('/:id', protect, getDoctorById);
+
+router.get('/me/profile', protect, getMyDoctorProfile);
+router.put('/me/profile', protect, updateMyDoctorProfile);
 
 router.post('/', protect, authorize('admin'), createDoctor);
 router.put('/:id', protect, authorize('admin'), updateDoctor);

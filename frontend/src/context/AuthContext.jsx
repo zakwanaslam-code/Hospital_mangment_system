@@ -5,15 +5,19 @@ const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+
   const [token, setToken] = useState(
     () =>
       localStorage.getItem("medicore-token") ||
       sessionStorage.getItem("medicore-token")
   );
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // ==========================
   // Restore User Session
+  // ==========================
   useEffect(() => {
     const restoreSession = async () => {
       const savedToken =
@@ -28,12 +32,10 @@ export function AuthProvider({ children }) {
       try {
         const res = await authService.getMe();
 
-        console.log("GET ME RESPONSE:", res);
-
-        // authService already returns data
-        setUser(res.user || res);
+        setUser(res.user || res.data || null);
+        setToken(savedToken);
       } catch (err) {
-        console.error(err);
+        console.error("Session Restore Error:", err);
 
         localStorage.removeItem("medicore-token");
         sessionStorage.removeItem("medicore-token");
@@ -48,7 +50,9 @@ export function AuthProvider({ children }) {
     restoreSession();
   }, []);
 
+  // ==========================
   // Login
+  // ==========================
   const login = async (email, password, rememberMe) => {
     setError(null);
 
@@ -57,7 +61,6 @@ export function AuthProvider({ children }) {
 
       console.log("LOGIN RESPONSE:", res);
 
-      // authService already returns data
       setUser(res.user);
       setToken(res.token);
 
@@ -66,7 +69,7 @@ export function AuthProvider({ children }) {
         sessionStorage.removeItem("medicore-token");
       } else {
         sessionStorage.setItem("medicore-token", res.token);
-        localStorage.setItem("medicore-token", res.token);
+        localStorage.removeItem("medicore-token");
       }
 
       return {
@@ -87,7 +90,9 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // ==========================
   // Logout
+  // ==========================
   const logout = async () => {
     try {
       await authService.logout();
@@ -102,14 +107,17 @@ export function AuthProvider({ children }) {
     sessionStorage.removeItem("medicore-token");
   };
 
+  // ==========================
+  // Refresh User
+  // ==========================
   const refreshUser = async () => {
-  try {
-    const res = await authService.getMe();
-    setUser(res.data);
-  } catch (err) {
-    // ignore
-  }
-};
+    try {
+      const res = await authService.getMe();
+      setUser(res.user || res.data || null);
+    } catch (err) {
+      console.error("Refresh User Error:", err);
+    }
+  };
 
   return (
     <AuthContext.Provider
@@ -128,6 +136,9 @@ export function AuthProvider({ children }) {
   );
 }
 
+// ==========================
+// Custom Hook
+// ==========================
 export const useAuth = () => {
   const context = useContext(AuthContext);
 

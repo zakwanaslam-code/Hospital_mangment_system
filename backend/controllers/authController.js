@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 import generateToken from "../utils/generateToken.js";
+import Doctor from "../models/Doctor.js";
 
 // ===============================
 // @desc    Register User
@@ -134,6 +135,7 @@ export const login = async (req, res) => {
 // ===============================
 export const getProfile = async (req, res) => {
   try {
+    // User data
     const user = await User.findById(req.user._id).select("-password");
 
     if (!user) {
@@ -143,10 +145,23 @@ export const getProfile = async (req, res) => {
       });
     }
 
+    // Doctor profile (agar user doctor hai)
+    let doctor = null;
+
+    if (user.role === "Doctor") {
+      doctor = await Doctor.findOne({ user: user._id })
+        .populate("department", "name")
+        .select(
+          "specialization qualification experience consultationFee schedule avgRating status department"
+        );
+    }
+
     return res.status(200).json({
       success: true,
       user,
+      doctor,
     });
+
   } catch (error) {
     console.error("PROFILE ERROR:", error);
 

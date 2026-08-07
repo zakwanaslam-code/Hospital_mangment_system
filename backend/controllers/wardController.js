@@ -1,9 +1,20 @@
 import asyncHandler from 'express-async-handler';
 import Ward from '../models/Ward.js';
 import { sendSuccess, sendCreated } from '../utils/apiResponse.js';
+import createNotification from "../utils/createNotification.js";
 
 export const createWard = asyncHandler(async (req, res) => {
   const ward = await Ward.create({ ...req.body, createdBy: req.user._id });
+
+await createNotification({
+  receiver: req.user._id,
+  sender: req.user._id,
+  title: "New Ward Created",
+  message: `${ward.name} ward has been created successfully.`,
+  type: "system",
+  link: `/wards/${ward._id}`,
+});
+
   sendCreated(res, 'Ward created successfully', ward);
 });
 
@@ -74,6 +85,16 @@ export const updateWard = asyncHandler(async (req, res) => {
 
   await ward.save();
 
+await createNotification({
+  receiver: req.user._id,
+  sender: req.user._id,
+  title: "Ward Updated",
+  message: `${ward.name} ward information has been updated.`,
+  type: "system",
+  link: `/wards/${ward._id}`,
+});
+
+
   const updatedWard = await Ward.findById(ward._id)
     .populate({
       path: "assignedDoctor",
@@ -100,6 +121,15 @@ export const updateBedStatus = asyncHandler(async (req, res) => {
   bed.patient = status === 'occupied' ? patientId : null;
   await ward.save();
 
+  await createNotification({
+  receiver: req.user._id,
+  sender: req.user._id,
+  title: "Bed Status Updated",
+  message: `Bed ${bed.bedNumber} status changed to ${bed.status}.`,
+  type: "patient",
+  link: `/wards/${ward._id}`,
+});
+
   sendSuccess(res, 'Bed status updated', ward);
 });
 
@@ -107,6 +137,16 @@ export const deleteWard = asyncHandler(async (req, res) => {
   const ward = await Ward.findById(req.params.id);
   if (!ward) { res.status(404); throw new Error('Ward not found'); }
   await ward.deleteOne();
+
+await createNotification({
+  receiver: req.user._id,
+  sender: req.user._id,
+  title: "Ward Deleted",
+  message: `${ward.name} ward has been deleted.`,
+  type: "system",
+  link: "/wards",
+});
+
   sendSuccess(res, 'Ward deleted successfully');
 });
 

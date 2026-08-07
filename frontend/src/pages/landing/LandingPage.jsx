@@ -376,13 +376,9 @@ function LandingPage() {
 {/* ================= FLOATING PARTICLES ================= */}
 
 <div className="absolute top-24 left-1/4 w-3 h-3 rounded-full bg-blue-400/40 animate-ping" />
-
 <div className="absolute top-40 right-1/3 w-2 h-2 rounded-full bg-cyan-300 animate-pulse" />
-
 <div className="absolute bottom-40 left-20 w-2 h-2 rounded-full bg-white animate-pulse" />
-
 <div className="absolute bottom-56 right-20 w-4 h-4 rounded-full bg-blue-500/30 animate-ping" />
-
 <div className="absolute top-1/2 left-12 w-2 h-2 rounded-full bg-cyan-400 animate-bounce" />
 
 {/* ================= LEFT VERTICAL LABEL ================= */}

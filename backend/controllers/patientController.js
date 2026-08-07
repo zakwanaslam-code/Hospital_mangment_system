@@ -1,14 +1,26 @@
 import asyncHandler from 'express-async-handler';
 import Patient from '../models/Patient.js';
 import { sendSuccess, sendCreated } from '../utils/apiResponse.js';
+import createNotification from "../utils/createNotification.js";
 
 // @desc    Create patient
 // @route   POST /api/patients
 // @access  Private (Admin/Receptionist)
 export const createPatient = asyncHandler(async (req, res) => {
   const patient = await Patient.create({ ...req.body, createdBy: req.user._id });
+  
+await createNotification({
+  receiver: req.user._id,
+  sender: req.user._id,
+  title: "New Patient Registered",
+  message: `${patient.name} has been registered successfully.`,
+  type: "patient",
+  link: `/patients/${patient._id}`,
+});
   sendCreated(res, 'Patient registered successfully', patient);
 });
+
+ 
 
 // @desc    Get all patients — search + filter + pagination
 // @route   GET /api/patients?search=&status=&department=&page=1&limit=10

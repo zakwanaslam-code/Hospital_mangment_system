@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Menu, Search, Bell, MessageSquare, Moon, Sun, ChevronDown, LogOut, User } from 'lucide-react';import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, Search, MessageSquare, Moon, Sun, ChevronDown, LogOut, User } from 'lucide-react';import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../../context/ThemeContext.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useNavigate } from 'react-router-dom';
+import NotificationBell from "../notifications/NotificationBell";
 
 function Navbar({ onMenuClick }) {
   const { theme, toggleTheme } = useTheme();
@@ -36,25 +37,19 @@ function Navbar({ onMenuClick }) {
       </div>
 
       {/* Right: actions */}
-      <div className="flex items-center gap-1 sm:gap-2">
-        <button className="p-2.5 rounded-xl text-dark-muted hover:bg-dark-card hover:text-dark-text relative">
-          <Bell size={19} />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-danger animate-pulseSoft" />
-        </button>
+     <div className="flex items-center gap-1 sm:gap-2">
 
-        <button className="p-2.5 rounded-xl text-dark-muted hover:bg-dark-card hover:text-dark-text">
-          <MessageSquare size={19} />
-        </button>
+  <NotificationBell />
 
-        
 
-        <button
-          onClick={toggleTheme}
-          className="p-2.5 rounded-xl text-dark-muted hover:bg-dark-card hover:text-dark-text"
-        >
-          {theme === 'dark' ? <Sun size={19} /> : <Moon size={19} />}
-        </button>
+  <button
+    onClick={toggleTheme}
+    className="p-2.5 rounded-xl text-dark-muted hover:bg-dark-card hover:text-dark-text"
+  >
+    {theme === "dark" ? <Sun size={19} /> : <Moon size={19} />}
+  </button>
 
+  {/* Profile Dropdown */}
         {/* Profile dropdown */}
         <div className="relative ml-1">
           <button
